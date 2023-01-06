@@ -33,6 +33,14 @@
 import CoreData
 import UIKit
 
+protocol FilterViewControllerDelegate: AnyObject {
+  func filterViewController(
+    filter: FilterViewController,
+    didSelectPredicate predicate: NSPredicate?,
+    sortDescription: NSSortDescriptor?
+  )
+}
+
 class FilterViewController: UITableViewController {
   @IBOutlet var firstPriceCategoryLabel: UILabel!
   @IBOutlet var secondPriceCategoryLabel: UILabel!
@@ -62,11 +70,30 @@ class FilterViewController: UITableViewController {
 
   var coreDataStack: CoreDataStack!
 
+  weak var delegate: FilterViewControllerDelegate?
+  var selectedSortDescriptor: NSSortDescriptor?
+  var selectedPredicate: NSPredicate?
+
   lazy var cheapVenuePredicate: NSPredicate = .init(format: "%K == %@", #keyPath(Venue.priceInfo.priceCategory), "$")
-
   lazy var moderateVenuePredicate: NSPredicate = .init(format: "%K == %@", #keyPath(Venue.priceInfo.priceCategory), "$$")
-
   lazy var expenciveVenuePredicate: NSPredicate = .init(format: "%K == %@", #keyPath(Venue.priceInfo.priceCategory), "$$$")
+
+  lazy var offeringDealPredicate: NSPredicate = .init(format: "%K > 0", #keyPath(Venue.specialCount))
+  lazy var walkingDistancePredicate: NSPredicate = .init(format: "%K < 0", #keyPath(Venue.location.distance))
+  lazy var hasUserTipsPredicate: NSPredicate = .init(format: "%K > 0", #keyPath(Venue.stats.tipCount))
+
+  lazy var nameSortDescriptor: NSSortDescriptor = {
+    let compareSelector = #selector(NSString.localizedStandardCompare(_:))
+
+    return NSSortDescriptor(
+      key: #keyPath(Venue.name),
+      ascending: true,
+      selector: compareSelector
+    )
+  }()
+
+  lazy var distanceSortDescriptor: NSSortDescriptor = .init(key: #keyPath(Venue.location.distance), ascending: true)
+  lazy var priceSortDescriptor: NSSortDescriptor = .init(key: #keyPath(Venue.priceInfo.priceCategory), ascending: true)
 
   // MARK: - View Life Cycle
 
@@ -83,7 +110,13 @@ class FilterViewController: UITableViewController {
 
 extension FilterViewController {
   @IBAction func search(_ sender: UIBarButtonItem) {
-    // Add code here
+    delegate?.filterViewController(
+      filter: self,
+      didSelectPredicate: selectedPredicate,
+      sortDescription: selectedSortDescriptor
+    )
+
+    dismiss(animated: true)
   }
 }
 
@@ -91,7 +124,41 @@ extension FilterViewController {
 
 extension FilterViewController {
   override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-    // Add code here
+    guard let cell = tableView.cellForRow(at: indexPath) else {
+      return
+    }
+
+    switch cell {
+    // Price section
+    case cheapVenueCell:
+      selectedPredicate = cheapVenuePredicate
+    case moderateVenueCell:
+      selectedPredicate = moderateVenuePredicate
+    case expensiveVenueCell:
+      selectedPredicate = expenciveVenuePredicate
+
+    // Most Popular section
+    case offeringDealCell:
+      selectedPredicate = offeringDealPredicate
+    case walkingDistanceCell:
+      selectedPredicate = walkingDistancePredicate
+    case userTipsCell:
+      selectedPredicate = hasUserTipsPredicate
+
+    // Sort By section
+    case nameAZSortCell:
+      selectedSortDescriptor = nameSortDescriptor
+    case nameZASortCell:
+      selectedSortDescriptor = nameSortDescriptor.reversedSortDescriptor as? NSSortDescriptor
+    case distanceSortCell:
+      selectedSortDescriptor = distanceSortDescriptor
+    case priceSortCell:
+      selectedSortDescriptor = priceSortDescriptor
+    default:
+      break
+    }
+
+    cell.accessoryType = .checkmark
   }
 }
 

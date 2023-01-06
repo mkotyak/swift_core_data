@@ -54,13 +54,7 @@ class ViewController: UIViewController {
 
     importJSONSeedDataIfNeeded()
 
-    guard let model = coreDataStack.managedContext.persistentStoreCoordinator?.managedObjectModel,
-          let fetchRequest = model.fetchRequestTemplate(forName: "FetchRequest") as? NSFetchRequest<Venue>
-    else {
-      return
-    }
-
-    self.fetchRequest = fetchRequest
+    fetchRequest = Venue.fetchRequest()
     fetchAndReload()
   }
 
@@ -73,8 +67,9 @@ class ViewController: UIViewController {
     else {
       return
     }
-    
+
     filterVC.coreDataStack = coreDataStack
+    filterVC.delegate = self
   }
 }
 
@@ -187,5 +182,30 @@ extension ViewController {
     }
 
     coreDataStack.saveContext()
+  }
+}
+
+// MARK: - FilterViewControllerDelegate
+
+extension ViewController: FilterViewControllerDelegate {
+  func filterViewController(
+    filter: FilterViewController,
+    didSelectPredicate predicate: NSPredicate?,
+    sortDescription: NSSortDescriptor?
+  ) {
+    guard let fetchRequest = fetchRequest else {
+      return
+    }
+
+    fetchRequest.predicate = nil
+    fetchRequest.sortDescriptors = nil
+
+    fetchRequest.predicate = predicate
+
+    if let sort = sortDescription {
+      fetchRequest.sortDescriptors = [sort]
+    }
+
+    fetchAndReload()
   }
 }
