@@ -2,31 +2,32 @@ import CoreData
 import UIKit
 
 class ViewController: UIViewController {
+    private var people: [NSManagedObject] = []
+
     @IBOutlet var tableView: UITableView!
-    var people: [NSManagedObject] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         title = "The list"
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
+        tableView.register(
+            UITableViewCell.self,
+            forCellReuseIdentifier: "Cell"
+        )
+
         (UIApplication.shared.delegate as! AppDelegate).saveContext()
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        //1
+
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
             return
         }
-        
+
         let managedContext = appDelegate.persistentContainer.viewContext
-        
-        //2
         let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Person")
-        
-        //3
+
         do {
             people = try managedContext.fetch(fetchRequest)
         } catch let error as NSError {
@@ -34,6 +35,37 @@ class ViewController: UIViewController {
         }
     }
 
+    private func save(name: String) {
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
+            return
+        }
+
+        let managedContext = appDelegate.persistentContainer.viewContext
+
+        let entity = NSEntityDescription.entity(
+            forEntityName: "Person",
+            in: managedContext
+        )!
+
+        let person = NSManagedObject(
+            entity: entity,
+            insertInto: managedContext
+        )
+
+        person.setValue(name, forKey: "name")
+
+        do {
+            try managedContext.save()
+            people.append(person)
+        } catch let error as NSError {
+            debugPrint("Chould not save. \(error), \(error.userInfo)")
+        }
+    }
+}
+
+// MARK: - Actions
+
+extension ViewController {
     @IBAction func addName(_ sender: UIBarButtonItem) {
         let alert = UIAlertController(
             title: "New Name",
@@ -44,16 +76,17 @@ class ViewController: UIViewController {
         let saveAction = UIAlertAction(
             title: "Save",
             style: .default
-        ) { [unowned self] _ in
+        ) { [weak self] _ in
 
-            guard let textField = alert.textFields?.first,
+            guard let self,
+                  let textField = alert.textFields?.first,
                   let nameToSave = textField.text
             else {
                 return
             }
 
-            self.save(name: nameToSave)
-            self.tableView.reloadData()
+            save(name: nameToSave)
+            tableView.reloadData()
         }
 
         let cancelAction = UIAlertAction(
@@ -67,40 +100,16 @@ class ViewController: UIViewController {
 
         present(alert, animated: true)
     }
-    
-    func save(name: String) {
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
-            return
-        }
-        
-        // 1
-        let managedContext = appDelegate.persistentContainer.viewContext
-        
-        // 2
-        let entity = NSEntityDescription.entity(forEntityName: "Person", in: managedContext)!
-        let person = NSManagedObject(entity: entity, insertInto: managedContext)
-        
-        // 3
-        person.setValue(name, forKey: "name")
-        
-        // 4
-        do {
-            try managedContext.save()
-            people.append(person)
-        } catch let error as NSError {
-            debugPrint("Chould not save. \(error), \(error.userInfo)")
-        }
-    }
 }
 
-// MARK: - UITableViewDataSource
+// MARK: - UITableView
 
-extension ViewController: UITableViewDataSource {
+extension ViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(
         _ tableView: UITableView,
         numberOfRowsInSection section: Int
     ) -> Int {
-        return people.count
+        people.count
     }
 
     func tableView(
@@ -108,9 +117,20 @@ extension ViewController: UITableViewDataSource {
         cellForRowAt indexPath: IndexPath
     ) -> UITableViewCell {
         let person = people[indexPath.row]
-        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(
+            withIdentifier: "Cell",
+            for: indexPath
+        )
 
         cell.textLabel?.text = person.value(forKeyPath: "name") as? String
+
         return cell
+    }
+
+    func tableView(
+        _ tableView: UITableView,
+        didSelectRowAt indexPath: IndexPath
+    ) {
+        tableView.deselectRow(at: indexPath, animated: true)
     }
 }

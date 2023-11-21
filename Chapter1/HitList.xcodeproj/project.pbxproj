@@ -58,14 +58,14 @@
 		FF3AB149295C78B20025D419 /* HitList */ = {
 			isa = PBXGroup;
 			children = (
+				FF3AB15B295C78B40025D419 /* Info.plist */,
 				FF3AB14A295C78B20025D419 /* AppDelegate.swift */,
 				FF3AB14C295C78B20025D419 /* SceneDelegate.swift */,
 				FF3AB14E295C78B20025D419 /* ViewController.swift */,
-				FF3AB150295C78B20025D419 /* Main.storyboard */,
 				FF3AB156295C78B40025D419 /* Assets.xcassets */,
-				FF3AB158295C78B40025D419 /* LaunchScreen.storyboard */,
-				FF3AB15B295C78B40025D419 /* Info.plist */,
 				FF3AB153295C78B20025D419 /* HitList.xcdatamodeld */,
+				FF3AB158295C78B40025D419 /* LaunchScreen.storyboard */,
+				FF3AB150295C78B20025D419 /* Main.storyboard */,
 			);
 			path = HitList;
 			sourceTree = "<group>";
@@ -291,6 +291,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 68Y6PK33C5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = HitList/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -318,6 +319,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 68Y6PK33C5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = HitList/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
