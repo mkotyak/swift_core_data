@@ -70,16 +70,16 @@
 		FEC6D47622ECFEB0004D739C /* BowTies */ = {
 			isa = PBXGroup;
 			children = (
-				FEC6D47722ECFEB0004D739C /* AppDelegate.swift */,
-				FEC6D48322ECFEB1004D739C /* Assets.xcassets */,
-				FEC6D48022ECFEB0004D739C /* BowTies.xcdatamodeld */,
-				FFB79AFD2963386F0084BB4E /* ColorAttributeTransformer.swift */,
 				FEC6D48822ECFEB1004D739C /* Info.plist */,
-				FEC6D48522ECFEB1004D739C /* LaunchScreen.storyboard */,
-				FEC6D47D22ECFEB0004D739C /* Main.storyboard */,
 				FEC6D48E22ED01C0004D739C /* SampleData.plist */,
+				FEC6D47722ECFEB0004D739C /* AppDelegate.swift */,
+				FFB79AFD2963386F0084BB4E /* ColorAttributeTransformer.swift */,
 				FEC6D47922ECFEB0004D739C /* SceneDelegate.swift */,
 				FEC6D47B22ECFEB0004D739C /* ViewController.swift */,
+				FEC6D48322ECFEB1004D739C /* Assets.xcassets */,
+				FEC6D48022ECFEB0004D739C /* BowTies.xcdatamodeld */,
+				FEC6D48522ECFEB1004D739C /* LaunchScreen.storyboard */,
+				FEC6D47D22ECFEB0004D739C /* Main.storyboard */,
 			);
 			path = BowTies;
 			sourceTree = "<group>";

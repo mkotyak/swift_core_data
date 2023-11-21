@@ -105,7 +105,7 @@ class ViewController: UIViewController {
 
   @IBAction func wear(_ sender: UIButton) {
     currentBowTie.timesWorn += 1
-    currentBowTie.lastWorn = Date()
+    currentBowTie.lastWorn = .init()
     
     do {
       try managedContext.save()
@@ -116,17 +116,27 @@ class ViewController: UIViewController {
   }
 
   @IBAction func rate(_ sender: UIButton) {
-    let alert = UIAlertController(title: "New rating", message: "Rate this bow tie", preferredStyle: .alert)
+    let alert = UIAlertController(
+      title: "New rating",
+      message: "Rate this bow tie",
+      preferredStyle: .alert
+    )
     
     alert.addTextField { textField in
       textField.keyboardType = .decimalPad
     }
     
-    let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
-    let saveAction = UIAlertAction(title: "Save", style: .default) { [unowned self] _ in
-      
+    let cancelAction = UIAlertAction(
+      title: "Cancel",
+      style: .cancel
+    )
+    
+    let saveAction = UIAlertAction(
+      title: "Save",
+      style: .default
+    ) { [weak self] _ in
       if let textField = alert.textFields?.first {
-        self.update(rating: textField.text)
+        self?.update(rating: textField.text)
       }
     }
     
@@ -137,7 +147,9 @@ class ViewController: UIViewController {
   }
   
   func update(rating: String?) {
-    guard let ratingString = rating, let rating = Double(ratingString) else {
+    guard let ratingString = rating,
+          let rating = Double(ratingString)
+    else {
       return
     }
     
@@ -146,7 +158,9 @@ class ViewController: UIViewController {
       try managedContext.save()
       populate(bowtie: currentBowTie)
     } catch let error as NSError {
-      if error.domain == NSCocoaErrorDomain && (error.code == NSValidationNumberTooLargeError || error.code == NSValidationNumberTooSmallError) {
+      if error.domain == NSCocoaErrorDomain
+        && (error.code == NSValidationNumberTooLargeError || error.code == NSValidationNumberTooSmallError)
+      {
         rate(rateButton)
       } else {
         debugPrint("Could not save \(error), \(error.userInfo)")
@@ -166,18 +180,30 @@ class ViewController: UIViewController {
       return
     }
     
-    let path = Bundle.main.path(forResource: "SampleData", ofType: "plist")
+    let path = Bundle.main.path(
+      forResource: "SampleData",
+      ofType: "plist"
+    )
+    
     let dataArray = NSArray(contentsOfFile: path!)!
     
     for dict in dataArray {
-      let entity = NSEntityDescription.entity(forEntityName: "BowTie", in: managedContext)!
+      let entity = NSEntityDescription.entity(
+        forEntityName: "BowTie",
+        in: managedContext
+      )!
       
-      let bowtie = BowTie(entity: entity, insertInto: managedContext)
+      let bowtie = BowTie(
+        entity: entity,
+        insertInto: managedContext
+      )
+      
       let btDict = dict as! [String: Any]
       bowtie.id = UUID(uuidString: btDict["id"] as! String)
       bowtie.name = btDict["name"] as? String
       bowtie.searchKey = btDict["searchKey"] as? String
       bowtie.rating = btDict["rating"] as! Double
+      
       let colorDict = btDict["tintColor"] as! [String: Any]
       bowtie.tintColor = UIColor.color(dict: colorDict)
       
