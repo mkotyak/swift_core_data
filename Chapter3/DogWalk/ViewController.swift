@@ -144,10 +144,10 @@ extension ViewController: UITableViewDataSource {
     else {
       return
     }
-    
+
     coreDataStack.managedContext.delete(walkToRemove)
     coreDataStack.saveContext()
-    
+
     tableView.deleteRows(at: [indexPath], with: .automatic)
   }
 }

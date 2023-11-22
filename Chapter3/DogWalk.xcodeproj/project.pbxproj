@@ -49,6 +49,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		738EA9932B0E01B30042BB05 /* Dog */ = {
+			isa = PBXGroup;
+			children = (
+				FFB6012E296496B200C7F0F2 /* Dog+CoreDataClass.swift */,
+				FFB6012F296496B200C7F0F2 /* Dog+CoreDataProperties.swift */,
+			);
+			path = Dog;
+			sourceTree = "<group>";
+		};
+		738EA9942B0E01BE0042BB05 /* Walk */ = {
+			isa = PBXGroup;
+			children = (
+				FFB6012C296496B200C7F0F2 /* Walk+CoreDataClass.swift */,
+				FFB6012D296496B200C7F0F2 /* Walk+CoreDataProperties.swift */,
+			);
+			path = Walk;
+			sourceTree = "<group>";
+		};
 		FE0EF92322FDDF4C00D0800D = {
 			isa = PBXGroup;
 			children = (
@@ -70,19 +88,17 @@
 		FE0EF92E22FDDF4C00D0800D /* DogWalk */ = {
 			isa = PBXGroup;
 			children = (
-				FE0EF92F22FDDF4C00D0800D /* AppDelegate.swift */,
-				FE0EF93B22FDDF4D00D0800D /* Assets.xcassets */,
-				FFB6012729648E8800C7F0F2 /* CoreDataStack.swift */,
-				FFB6012E296496B200C7F0F2 /* Dog+CoreDataClass.swift */,
-				FFB6012F296496B200C7F0F2 /* Dog+CoreDataProperties.swift */,
-				FFB601292964934200C7F0F2 /* DogWalk.xcdatamodeld */,
 				FE0EF94022FDDF4D00D0800D /* Info.plist */,
-				FE0EF93D22FDDF4D00D0800D /* LaunchScreen.storyboard */,
-				FE0EF93522FDDF4C00D0800D /* Main.storyboard */,
+				FE0EF92F22FDDF4C00D0800D /* AppDelegate.swift */,
+				FFB6012729648E8800C7F0F2 /* CoreDataStack.swift */,
 				FE0EF93122FDDF4C00D0800D /* SceneDelegate.swift */,
 				FE0EF93322FDDF4C00D0800D /* ViewController.swift */,
-				FFB6012C296496B200C7F0F2 /* Walk+CoreDataClass.swift */,
-				FFB6012D296496B200C7F0F2 /* Walk+CoreDataProperties.swift */,
+				FE0EF93B22FDDF4D00D0800D /* Assets.xcassets */,
+				738EA9932B0E01B30042BB05 /* Dog */,
+				FFB601292964934200C7F0F2 /* DogWalk.xcdatamodeld */,
+				FE0EF93D22FDDF4D00D0800D /* LaunchScreen.storyboard */,
+				FE0EF93522FDDF4C00D0800D /* Main.storyboard */,
+				738EA9942B0E01BE0042BB05 /* Walk */,
 			);
 			path = DogWalk;
 			sourceTree = "<group>";
