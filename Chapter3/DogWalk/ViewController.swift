@@ -36,16 +36,16 @@ import UIKit
 class ViewController: UIViewController {
   // MARK: - Properties
 
-  lazy var dateFormatter: DateFormatter = {
+  private lazy var dateFormatter: DateFormatter = {
     let formatter = DateFormatter()
     formatter.dateStyle = .short
     formatter.timeStyle = .medium
     return formatter
   }()
 
-  lazy var coreDataStack = CoreDataStack(modelName: "DogWalk")
+  private lazy var coreDataStack = CoreDataStack(modelName: "DogWalk")
 
-  var currentDog: Dog?
+  private var currentDog: Dog?
 
   // MARK: - IBOutlets
 
@@ -56,7 +56,10 @@ class ViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
 
-    tableView.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
+    tableView.register(
+      UITableViewCell.self,
+      forCellReuseIdentifier: "Cell"
+    )
 
     let dogName = "Fido"
     let dogFetch: NSFetchRequest<Dog> = Dog.fetchRequest()
@@ -88,7 +91,9 @@ extension ViewController {
     let walk = Walk(context: coreDataStack.managedContext)
     walk.date = Date()
 
-    if let dog = currentDog, let walks = dog.walks?.mutableCopy() as? NSMutableOrderedSet {
+    if let dog = currentDog,
+       let walks = dog.walks?.mutableCopy() as? NSMutableOrderedSet
+    {
       walks.add(walk)
       dog.walks = walks
     }
@@ -110,7 +115,8 @@ extension ViewController: UITableViewDataSource {
     cellForRowAt indexPath: IndexPath
   ) -> UITableViewCell {
     let cell = tableView.dequeueReusableCell(
-      withIdentifier: "Cell", for: indexPath
+      withIdentifier: "Cell",
+      for: indexPath
     )
 
     guard let walk = currentDog?.walks?[indexPath.row] as? Walk,
@@ -123,7 +129,10 @@ extension ViewController: UITableViewDataSource {
     return cell
   }
 
-  func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+  func tableView(
+    _ tableView: UITableView,
+    titleForHeaderInSection section: Int
+  ) -> String? {
     "List of Walks"
   }
 
@@ -148,6 +157,9 @@ extension ViewController: UITableViewDataSource {
     coreDataStack.managedContext.delete(walkToRemove)
     coreDataStack.saveContext()
 
-    tableView.deleteRows(at: [indexPath], with: .automatic)
+    tableView.deleteRows(
+      at: [indexPath],
+      with: .automatic
+    )
   }
 }
