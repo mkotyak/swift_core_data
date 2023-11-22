@@ -39,10 +39,10 @@ class ViewController: UIViewController {
   private let filterViewControllerSegueIdentifier = "toFilterViewController"
   private let venueCellIdentifier = "VenueCell"
 
-  lazy var coreDataStack = CoreDataStack(modelName: "BubbleTeaFinder")
-  var fetchRequest: NSFetchRequest<Venue>?
-  var venues: [Venue] = []
-  var asyncFetchRequest: NSAsynchronousFetchRequest<Venue>?
+  private lazy var coreDataStack = CoreDataStack(modelName: "BubbleTeaFinder")
+  private var fetchRequest: NSFetchRequest<Venue>?
+  private var venues: [Venue] = []
+  private var asyncFetchRequest: NSAsynchronousFetchRequest<Venue>?
 
   // MARK: - IBOutlets
 
@@ -54,12 +54,12 @@ class ViewController: UIViewController {
     super.viewDidLoad()
 
     importJSONSeedDataIfNeeded()
-    
+
     let batchUpdate = NSBatchUpdateRequest(entityName: "Venue")
-    batchUpdate.propertiesToUpdate = [#keyPath(Venue.favorite) : true]
+    batchUpdate.propertiesToUpdate = [#keyPath(Venue.favorite): true]
     batchUpdate.affectedStores = coreDataStack.managedContext.persistentStoreCoordinator?.persistentStores
     batchUpdate.resultType = .updatedObjectsCountResultType
-    
+
     do {
       let batchResult = try coreDataStack.managedContext.execute(batchUpdate) as? NSBatchUpdateResult
       debugPrint("Records updated \(String(describing: batchResult?.result))")
@@ -80,13 +80,13 @@ class ViewController: UIViewController {
       self.venues = venues
       fetchAndReload()
     }
-    
+
     // 3
     do {
       guard let asyncFetchRequest = asyncFetchRequest else {
         return
       }
-      
+
       try coreDataStack.managedContext.execute(asyncFetchRequest)
     } catch let error as NSError {
       debugPrint("Could not fetch \(error), \(error.userInfo)")
@@ -95,7 +95,10 @@ class ViewController: UIViewController {
 
   // MARK: - Navigation
 
-  override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+  override func prepare(
+    for segue: UIStoryboardSegue,
+    sender: Any?
+  ) {
     guard segue.identifier == filterViewControllerSegueIdentifier,
           let navController = segue.destination as? UINavigationController,
           let filterVC = navController.topViewController as? FilterViewController
@@ -155,7 +158,10 @@ extension ViewController {
 
     do {
       let venueCount = try coreDataStack.managedContext.count(for: fetchRequest)
-      guard venueCount == 0 else { return }
+      guard venueCount == 0 else {
+        return
+      }
+
       try importJSONSeedData()
     } catch let error as NSError {
       print("Error fetching: \(error), \(error.userInfo)")
@@ -164,11 +170,18 @@ extension ViewController {
 
   func importJSONSeedData() throws {
     // swiftlint:disable:next force_unwrapping
-    let jsonURL = Bundle.main.url(forResource: "seed", withExtension: "json")!
+    let jsonURL = Bundle.main.url(
+      forResource: "seed",
+      withExtension: "json"
+    )!
+
     let jsonData = try Data(contentsOf: jsonURL)
 
     guard
-      let jsonDict = try JSONSerialization.jsonObject(with: jsonData, options: [.fragmentsAllowed]) as? [String: Any],
+      let jsonDict = try JSONSerialization.jsonObject(
+        with: jsonData,
+        options: [.fragmentsAllowed]
+      ) as? [String: Any],
       let responseDict = jsonDict["response"] as? [String: Any],
       let jsonArray = responseDict["venues"] as? [[String: Any]]
     else {
