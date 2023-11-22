@@ -40,9 +40,11 @@ class ViewController: UIViewController {
   private let venueCellIdentifier = "VenueCell"
 
   private lazy var coreDataStack = CoreDataStack(modelName: "BubbleTeaFinder")
+
   private var fetchRequest: NSFetchRequest<Venue>?
-  private var venues: [Venue] = []
   private var asyncFetchRequest: NSAsynchronousFetchRequest<Venue>?
+
+  private var venues: [Venue] = []
 
   // MARK: - IBOutlets
 
@@ -137,15 +139,26 @@ extension ViewController {
 // MARK: - UITableViewDataSource
 
 extension ViewController: UITableViewDataSource {
-  func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+  func tableView(
+    _ tableView: UITableView,
+    numberOfRowsInSection section: Int
+  ) -> Int {
     venues.count
   }
 
-  func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-    let cell = tableView.dequeueReusableCell(withIdentifier: venueCellIdentifier, for: indexPath)
+  func tableView(
+    _ tableView: UITableView,
+    cellForRowAt indexPath: IndexPath
+  ) -> UITableViewCell {
+    let cell = tableView.dequeueReusableCell(
+      withIdentifier: venueCellIdentifier,
+      for: indexPath
+    )
     let venue = venues[indexPath.row]
+
     cell.textLabel?.text = venue.name
     cell.detailTextLabel?.text = venue.priceInfo?.priceCategory
+
     return cell
   }
 }

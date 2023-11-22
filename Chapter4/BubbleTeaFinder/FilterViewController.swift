@@ -74,13 +74,35 @@ class FilterViewController: UITableViewController {
   var selectedSortDescriptor: NSSortDescriptor?
   var selectedPredicate: NSPredicate?
 
-  lazy var cheapVenuePredicate: NSPredicate = .init(format: "%K == %@", #keyPath(Venue.priceInfo.priceCategory), "$")
-  lazy var moderateVenuePredicate: NSPredicate = .init(format: "%K == %@", #keyPath(Venue.priceInfo.priceCategory), "$$")
-  lazy var expenciveVenuePredicate: NSPredicate = .init(format: "%K == %@", #keyPath(Venue.priceInfo.priceCategory), "$$$")
+  lazy var cheapVenuePredicate: NSPredicate = .init(
+    format: "%K == %@",
+    #keyPath(Venue.priceInfo.priceCategory), "$"
+  )
 
-  lazy var offeringDealPredicate: NSPredicate = .init(format: "%K > 0", #keyPath(Venue.specialCount))
-  lazy var walkingDistancePredicate: NSPredicate = .init(format: "%K < 0", #keyPath(Venue.location.distance))
-  lazy var hasUserTipsPredicate: NSPredicate = .init(format: "%K > 0", #keyPath(Venue.stats.tipCount))
+  lazy var moderateVenuePredicate: NSPredicate = .init(
+    format: "%K == %@",
+    #keyPath(Venue.priceInfo.priceCategory), "$$"
+  )
+
+  lazy var expenciveVenuePredicate: NSPredicate = .init(
+    format: "%K == %@",
+    #keyPath(Venue.priceInfo.priceCategory), "$$$"
+  )
+
+  lazy var offeringDealPredicate: NSPredicate = .init(
+    format: "%K > 0",
+    #keyPath(Venue.specialCount)
+  )
+
+  lazy var walkingDistancePredicate: NSPredicate = .init(
+    format: "%K < 0",
+    #keyPath(Venue.location.distance)
+  )
+
+  lazy var hasUserTipsPredicate: NSPredicate = .init(
+    format: "%K > 0",
+    #keyPath(Venue.stats.tipCount)
+  )
 
   lazy var nameSortDescriptor: NSSortDescriptor = {
     let compareSelector = #selector(NSString.localizedStandardCompare(_:))
@@ -92,8 +114,15 @@ class FilterViewController: UITableViewController {
     )
   }()
 
-  lazy var distanceSortDescriptor: NSSortDescriptor = .init(key: #keyPath(Venue.location.distance), ascending: true)
-  lazy var priceSortDescriptor: NSSortDescriptor = .init(key: #keyPath(Venue.priceInfo.priceCategory), ascending: true)
+  lazy var distanceSortDescriptor: NSSortDescriptor = .init(
+    key: #keyPath(Venue.location.distance),
+    ascending: true
+  )
+
+  lazy var priceSortDescriptor: NSSortDescriptor = .init(
+    key: #keyPath(Venue.priceInfo.priceCategory),
+    ascending: true
+  )
 
   // MARK: - View Life Cycle
 
@@ -102,7 +131,7 @@ class FilterViewController: UITableViewController {
     populateCheapVenueCountLabel()
     populateModerateVenueCountLabel()
     populateExpenciveVenueCountLabel()
-    populateDealCountLabel()
+    populateDealsCountLabel()
   }
 }
 
@@ -200,6 +229,7 @@ extension FilterViewController {
   }
 
   func populateExpenciveVenueCountLabel() {
+    // An alternative way to fetch a count
     let fetchRequest: NSFetchRequest<Venue> = Venue.fetchRequest()
     fetchRequest.predicate = expenciveVenuePredicate
 
@@ -213,25 +243,24 @@ extension FilterViewController {
     }
   }
 
-  func populateDealCountLabel() {
-    // 1
+  func populateDealsCountLabel() {
     let fetchRequest = NSFetchRequest<NSDictionary>(entityName: "Venue")
     fetchRequest.resultType = .dictionaryResultType
 
-    // 2
-    let sumExpressionDesc = NSExpressionDescription()
-    sumExpressionDesc.name = "sumDeals"
+    let sumExpressionDescription = NSExpressionDescription()
+    sumExpressionDescription.name = "sumDeals"
 
-    // 3
-    let specialCountExp = NSExpression(forKeyPath: #keyPath(Venue.specialCount))
+    let specialCountExpression = NSExpression(forKeyPath: #keyPath(Venue.specialCount))
 
-    sumExpressionDesc.expression = NSExpression(forFunction: "sum:", arguments: [specialCountExp])
-    sumExpressionDesc.expressionResultType = .integer32AttributeType
+    sumExpressionDescription.expression = NSExpression(
+      forFunction: "sum:",
+      arguments: [specialCountExpression]
+    )
 
-    // 4
-    fetchRequest.propertiesToFetch = [sumExpressionDesc]
+    sumExpressionDescription.expressionResultType = .integer32AttributeType
 
-    // 5
+    fetchRequest.propertiesToFetch = [sumExpressionDescription]
+
     do {
       let results = try coreDataStack.managedContext.fetch(fetchRequest)
 
