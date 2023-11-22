@@ -88,18 +88,18 @@
 		FE0EF98122FF3B2700D0800D /* BubbleTeaFinder */ = {
 			isa = PBXGroup;
 			children = (
+				FEAFE62723012AE00058378D /* seed.json */,
+				FE0EF99322FF3B2800D0800D /* Info.plist */,
 				FE0EF98222FF3B2700D0800D /* AppDelegate.swift */,
+				FEAFE6002300A03C0058378D /* CoreDataStack.swift */,
+				FEAFE6022300A0660058378D /* FilterViewController.swift */,
 				FE0EF98422FF3B2700D0800D /* SceneDelegate.swift */,
 				FE0EF98622FF3B2700D0800D /* ViewController.swift */,
-				FEAFE6022300A0660058378D /* FilterViewController.swift */,
-				FEAFE6002300A03C0058378D /* CoreDataStack.swift */,
-				FE0EF98E22FF3B2800D0800D /* Assets.xcassets */,
-				FE0EF98822FF3B2700D0800D /* Main.storyboard */,
-				FE0EF99022FF3B2800D0800D /* LaunchScreen.storyboard */,
-				FE0EF99322FF3B2800D0800D /* Info.plist */,
 				FEAFE62623012AE00058378D /* attribution.txt */,
-				FEAFE62723012AE00058378D /* seed.json */,
+				FE0EF98E22FF3B2800D0800D /* Assets.xcassets */,
 				FE0EF98B22FF3B2700D0800D /* BubbleTeaFinder.xcdatamodeld */,
+				FE0EF99022FF3B2800D0800D /* LaunchScreen.storyboard */,
+				FE0EF98822FF3B2700D0800D /* Main.storyboard */,
 				FEAFE5E923009E7B0058378D /* NSManagedObject */,
 			);
 			path = BubbleTeaFinder;
@@ -384,7 +384,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.razeware.BubbleTeaFinder;
+				PRODUCT_BUNDLE_IDENTIFIER = MK.BubbleTeaFinder;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -402,7 +402,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.razeware.BubbleTeaFinder;
+				PRODUCT_BUNDLE_IDENTIFIER = MK.BubbleTeaFinder;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
