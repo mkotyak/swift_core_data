@@ -33,14 +33,6 @@
 import CoreData
 import UIKit
 
-protocol FilterViewControllerDelegate: AnyObject {
-  func filterViewController(
-    filter: FilterViewController,
-    didSelectPredicate predicate: NSPredicate?,
-    sortDescription: NSSortDescriptor?
-  )
-}
-
 class FilterViewController: UITableViewController {
   @IBOutlet var firstPriceCategoryLabel: UILabel!
   @IBOutlet var secondPriceCategoryLabel: UILabel!
@@ -84,7 +76,7 @@ class FilterViewController: UITableViewController {
     #keyPath(Venue.priceInfo.priceCategory), "$$"
   )
 
-  lazy var expenciveVenuePredicate: NSPredicate = .init(
+  lazy var expensiveVenuePredicate: NSPredicate = .init(
     format: "%K == %@",
     #keyPath(Venue.priceInfo.priceCategory), "$$$"
   )
@@ -152,7 +144,10 @@ extension FilterViewController {
 // MARK: - UITableViewDelegate
 
 extension FilterViewController {
-  override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+  override func tableView(
+    _ tableView: UITableView,
+    didSelectRowAt indexPath: IndexPath
+  ) {
     guard let cell = tableView.cellForRow(at: indexPath) else {
       return
     }
@@ -164,7 +159,7 @@ extension FilterViewController {
     case moderateVenueCell:
       selectedPredicate = moderateVenuePredicate
     case expensiveVenueCell:
-      selectedPredicate = expenciveVenuePredicate
+      selectedPredicate = expensiveVenuePredicate
 
     // Most Popular section
     case offeringDealCell:
@@ -231,7 +226,7 @@ extension FilterViewController {
   func populateExpenciveVenueCountLabel() {
     // An alternative way to fetch a count
     let fetchRequest: NSFetchRequest<Venue> = Venue.fetchRequest()
-    fetchRequest.predicate = expenciveVenuePredicate
+    fetchRequest.predicate = expensiveVenuePredicate
 
     do {
       let count = try coreDataStack.managedContext.count(for: fetchRequest)

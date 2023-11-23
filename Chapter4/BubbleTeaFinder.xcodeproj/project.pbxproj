@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		738EA9962B0F78410042BB05 /* FilterViewControllerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 738EA9952B0F78410042BB05 /* FilterViewControllerDelegate.swift */; };
 		FE0EF98322FF3B2700D0800D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0EF98222FF3B2700D0800D /* AppDelegate.swift */; };
 		FE0EF98522FF3B2700D0800D /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0EF98422FF3B2700D0800D /* SceneDelegate.swift */; };
 		FE0EF98722FF3B2700D0800D /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0EF98622FF3B2700D0800D /* ViewController.swift */; };
@@ -31,6 +32,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		738EA9952B0F78410042BB05 /* FilterViewControllerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterViewControllerDelegate.swift; sourceTree = "<group>"; };
 		FE0EF97F22FF3B2700D0800D /* BubbleTeaFinder.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BubbleTeaFinder.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FE0EF98222FF3B2700D0800D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		FE0EF98422FF3B2700D0800D /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -93,6 +95,7 @@
 				FE0EF98222FF3B2700D0800D /* AppDelegate.swift */,
 				FEAFE6002300A03C0058378D /* CoreDataStack.swift */,
 				FEAFE6022300A0660058378D /* FilterViewController.swift */,
+				738EA9952B0F78410042BB05 /* FilterViewControllerDelegate.swift */,
 				FE0EF98422FF3B2700D0800D /* SceneDelegate.swift */,
 				FE0EF98622FF3B2700D0800D /* ViewController.swift */,
 				FEAFE62623012AE00058378D /* attribution.txt */,
@@ -227,6 +230,7 @@
 				FEAFE5F923009EC10058378D /* Location+CoreDataProperties.swift in Sources */,
 				FEAFE5F423009EC10058378D /* Category+CoreDataClass.swift in Sources */,
 				FEAFE6032300A0660058378D /* FilterViewController.swift in Sources */,
+				738EA9962B0F78410042BB05 /* FilterViewControllerDelegate.swift in Sources */,
 				FEAFE5F623009EC10058378D /* Venue+CoreDataClass.swift in Sources */,
 				FEAFE5F823009EC10058378D /* Location+CoreDataClass.swift in Sources */,
 				FE0EF98522FF3B2700D0800D /* SceneDelegate.swift in Sources */,
