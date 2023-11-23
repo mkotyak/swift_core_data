@@ -69,21 +69,18 @@ class ViewController: UIViewController {
       debugPrint("Could not update \(error), \(error.userInfo)")
     }
 
-    // 1
     let venueFetchRequest: NSFetchRequest<Venue> = Venue.fetchRequest()
     fetchRequest = venueFetchRequest
 
-    // 2
-    asyncFetchRequest = NSAsynchronousFetchRequest<Venue>(fetchRequest: venueFetchRequest) { [unowned self] (result: NSAsynchronousFetchResult) in
+    asyncFetchRequest = NSAsynchronousFetchRequest<Venue>(fetchRequest: venueFetchRequest) { [weak self] (result: NSAsynchronousFetchResult) in
       guard let venues = result.finalResult else {
         return
       }
 
-      self.venues = venues
-      fetchAndReload()
+      self?.venues = venues
+      self?.fetchAndReload()
     }
 
-    // 3
     do {
       guard let asyncFetchRequest = asyncFetchRequest else {
         return
