@@ -40,15 +40,14 @@ class ViewController: UIViewController {
   lazy var coreDataStack = CoreDataStack(modelName: "WorldCup")
 
   lazy var fetchedResultsController: NSFetchedResultsController<Team> = {
-    // 1
     let fetchRequest: NSFetchRequest<Team> = Team.fetchRequest()
     let sort = NSSortDescriptor(
       key: #keyPath(Team.teamName),
       ascending: true
     )
+
     fetchRequest.sortDescriptors = [sort]
 
-    // 2
     let fetchResultController = NSFetchedResultsController(
       fetchRequest: fetchRequest,
       managedObjectContext: coreDataStack.managedContext,
@@ -82,7 +81,10 @@ class ViewController: UIViewController {
 // MARK: - Internal
 
 extension ViewController {
-  func configure(cell: UITableViewCell, for indexPath: IndexPath) {
+  func configure(
+    cell: UITableViewCell,
+    for indexPath: IndexPath
+  ) {
     guard let cell = cell as? TeamCell else {
       return
     }
@@ -106,7 +108,10 @@ extension ViewController: UITableViewDataSource {
     fetchedResultsController.sections?.count ?? 0
   }
 
-  func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+  func tableView(
+    _ tableView: UITableView,
+    numberOfRowsInSection section: Int
+  ) -> Int {
     guard let sectionsInfo = fetchedResultsController.sections?[section] else {
       return 0
     }
@@ -114,13 +119,23 @@ extension ViewController: UITableViewDataSource {
     return sectionsInfo.numberOfObjects
   }
 
-  func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-    let cell = tableView.dequeueReusableCell(withIdentifier: teamCellIdentifier, for: indexPath)
+  func tableView(
+    _ tableView: UITableView,
+    cellForRowAt indexPath: IndexPath
+  ) -> UITableViewCell {
+    let cell = tableView.dequeueReusableCell(
+      withIdentifier: teamCellIdentifier,
+      for: indexPath
+    )
     configure(cell: cell, for: indexPath)
+
     return cell
   }
-  
-  func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+
+  func tableView(
+    _ tableView: UITableView,
+    titleForHeaderInSection section: Int
+  ) -> String? {
     let sectionInfo = fetchedResultsController.sections?[section]
     return sectionInfo?.name
   }
@@ -129,7 +144,10 @@ extension ViewController: UITableViewDataSource {
 // MARK: - UITableViewDelegate
 
 extension ViewController: UITableViewDelegate {
-  func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+  func tableView(
+    _ tableView: UITableView,
+    didSelectRowAt indexPath: IndexPath
+  ) {
     let team = fetchedResultsController.object(at: indexPath)
     team.wins += 1
     coreDataStack.saveContext()
@@ -153,13 +171,19 @@ extension ViewController {
     importJSONSeedData()
   }
 
-  // swiftlint:disable force_unwrapping force_cast force_try
   func importJSONSeedData() {
-    let jsonURL = Bundle.main.url(forResource: "seed", withExtension: "json")!
+    let jsonURL = Bundle.main.url(
+      forResource: "seed",
+      withExtension: "json"
+    )!
+
     let jsonData = try! Data(contentsOf: jsonURL)
 
     do {
-      let jsonArray = try JSONSerialization.jsonObject(with: jsonData, options: [.allowFragments]) as! [[String: Any]]
+      let jsonArray = try JSONSerialization.jsonObject(
+        with: jsonData,
+        options: [.allowFragments]
+      ) as! [[String: Any]]
 
       for jsonDictionary in jsonArray {
         let teamName = jsonDictionary["teamName"] as! String
@@ -180,5 +204,4 @@ extension ViewController {
       print("Error importing teams: \(error)")
     }
   }
-  // swiftlint:enable force_unwrapping force_cast force_try
 }
