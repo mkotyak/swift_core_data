@@ -37,6 +37,8 @@ class ViewController: UIViewController {
   // MARK: - Properties
 
   private let teamCellIdentifier = "teamCellReuseIdentifier"
+  private var dataSource: UITableViewDiffableDataSource<String, NSManagedObjectID>?
+
   lazy var coreDataStack = CoreDataStack(modelName: "WorldCup")
 
   lazy var fetchedResultsController: NSFetchedResultsController<Team> = {
@@ -81,11 +83,18 @@ class ViewController: UIViewController {
     super.viewDidLoad()
 
     importJSONSeedDataIfNeeded()
+    dataSource = setupDataSource()
+  }
 
-    do {
-      try fetchedResultsController.performFetch()
-    } catch let error as NSError {
-      debugPrint("Fetching error: \(error), \(error.userInfo)")
+  override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
+
+    UIView.performWithoutAnimation {
+      do {
+        try fetchedResultsController.performFetch()
+      } catch let error as NSError {
+        debugPrint("Fetching error: \(error), \(error.userInfo)")
+      }
     }
   }
 
@@ -150,13 +159,12 @@ extension ViewController {
 extension ViewController {
   func configure(
     cell: UITableViewCell,
-    for indexPath: IndexPath
+    for team: Team
   ) {
     guard let cell = cell as? TeamCell else {
       return
     }
 
-    let team = fetchedResultsController.object(at: indexPath)
     cell.teamLabel.text = team.teamName
     cell.scoreLabel.text = "Wins: \(team.wins)"
 
@@ -166,45 +174,21 @@ extension ViewController {
       cell.flagImageView.image = nil
     }
   }
-}
 
-// MARK: - UITableViewDataSource
+  func setupDataSource() -> UITableViewDiffableDataSource<String, NSManagedObjectID> {
+    UITableViewDiffableDataSource(tableView: tableView) { [weak self] tableView, indexPath, managedObjectID -> UITableViewCell? in
+      guard let self else {
+        return nil
+      }
 
-extension ViewController: UITableViewDataSource {
-  func numberOfSections(in tableView: UITableView) -> Int {
-    fetchedResultsController.sections?.count ?? 0
-  }
+      let cell = tableView.dequeueReusableCell(withIdentifier: teamCellIdentifier, for: indexPath)
 
-  func tableView(
-    _ tableView: UITableView,
-    numberOfRowsInSection section: Int
-  ) -> Int {
-    guard let sectionsInfo = fetchedResultsController.sections?[section] else {
-      return 0
+      if let team = try? coreDataStack.managedContext.existingObject(with: managedObjectID) as? Team {
+        configure(cell: cell, for: team)
+      }
+
+      return cell
     }
-
-    return sectionsInfo.numberOfObjects
-  }
-
-  func tableView(
-    _ tableView: UITableView,
-    cellForRowAt indexPath: IndexPath
-  ) -> UITableViewCell {
-    let cell = tableView.dequeueReusableCell(
-      withIdentifier: teamCellIdentifier,
-      for: indexPath
-    )
-    configure(cell: cell, for: indexPath)
-
-    return cell
-  }
-
-  func tableView(
-    _ tableView: UITableView,
-    titleForHeaderInSection section: Int
-  ) -> String? {
-    let sectionInfo = fetchedResultsController.sections?[section]
-    return sectionInfo?.name
   }
 }
 
@@ -215,14 +199,35 @@ extension ViewController: UITableViewDelegate {
     _ tableView: UITableView,
     didSelectRowAt indexPath: IndexPath
   ) {
-    tableView.deselectRow(
-      at: indexPath,
-      animated: true
-    )
-
     let team = fetchedResultsController.object(at: indexPath)
     team.wins += 1
+
+    if var snapshot = dataSource?.snapshot() {
+      snapshot.reloadItems([team.objectID])
+      dataSource?.apply(snapshot, animatingDifferences: false)
+    }
+
     coreDataStack.saveContext()
+  }
+
+  func tableView(
+    _ tableView: UITableView,
+    viewForHeaderInSection section: Int
+  ) -> UIView? {
+    let sectionInfo = fetchedResultsController.sections?[section]
+    let titleLabel = UILabel()
+
+    titleLabel.backgroundColor = .white
+    titleLabel.text = sectionInfo?.name
+
+    return titleLabel
+  }
+
+  func tableView(
+    _ tableView: UITableView,
+    heightForHeaderInSection section: Int
+  ) -> CGFloat {
+    20
   }
 }
 
@@ -280,73 +285,11 @@ extension ViewController {
 // MARK: - NSFetchedResultsControllerDelegate
 
 extension ViewController: NSFetchedResultsControllerDelegate {
-  func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-    tableView.beginUpdates()
-  }
-
   func controller(
     _ controller: NSFetchedResultsController<NSFetchRequestResult>,
-    didChange anObject: Any,
-    at indexPath: IndexPath?,
-    for type: NSFetchedResultsChangeType,
-    newIndexPath: IndexPath?
+    didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference
   ) {
-    switch type {
-    case .insert:
-      tableView.insertRows(
-        at: [newIndexPath!],
-        with: .automatic
-      )
-    case .delete:
-      tableView.deleteRows(
-        at: [indexPath!],
-        with: .automatic
-      )
-    case .move:
-      tableView.deleteRows(
-        at: [indexPath!],
-        with: .automatic
-      )
-      tableView.insertRows(
-        at: [newIndexPath!],
-        with: .automatic
-      )
-    case .update:
-      let cell = tableView.cellForRow(at: indexPath!) as! TeamCell
-      configure(
-        cell: cell,
-        for: indexPath!
-      )
-    @unknown default:
-      debugPrint("Unexpected NSFetchedResultsChangeType")
-    }
-  }
-
-  func controller(
-    _ controller: NSFetchedResultsController<NSFetchRequestResult>,
-    didChange sectionInfo: NSFetchedResultsSectionInfo,
-    atSectionIndex sectionIndex: Int,
-    for type: NSFetchedResultsChangeType
-  ) {
-    let indexSet: IndexSet = .init(integer: sectionIndex)
-
-    switch type {
-    case .insert:
-      tableView.insertSections(
-        indexSet,
-        with: .automatic
-      )
-    case .delete:
-      tableView.deleteSections(
-        indexSet,
-        with: .automatic
-      )
-    default:
-      break
-    }
-  }
-
-  func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-    tableView.endUpdates()
+    let snapshot = snapshot as NSDiffableDataSourceSnapshot<String, NSManagedObjectID>
+    dataSource?.apply(snapshot)
   }
 }
