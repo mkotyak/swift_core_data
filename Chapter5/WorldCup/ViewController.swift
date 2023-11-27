@@ -88,6 +88,61 @@ class ViewController: UIViewController {
       debugPrint("Fetching error: \(error), \(error.userInfo)")
     }
   }
+
+  override func motionEnded(
+    _ motion: UIEvent.EventSubtype,
+    with event: UIEvent?
+  ) {
+    if motion == .motionShake {
+      addButton.isEnabled = true
+    }
+  }
+}
+
+// MARK: - IBActions
+
+extension ViewController {
+  @IBAction func addTeam(_ sender: Any) {
+    let alertController = UIAlertController(
+      title: "Secret Team",
+      message: "Add a new team",
+      preferredStyle: .alert
+    )
+
+    alertController.addTextField { textField in
+      textField.placeholder = "Team Name"
+    }
+
+    alertController.addTextField { textField in
+      textField.placeholder = "Qualifying Zone"
+    }
+
+    let saveAction: UIAlertAction = .init(
+      title: "Save",
+      style: .destructive
+    ) { [weak self] _ in
+      guard let self,
+            let nameTextField = alertController.textFields?.first,
+            let zoneTextField = alertController.textFields?.last
+      else {
+        return
+      }
+
+      let team: Team = .init(context: coreDataStack.managedContext)
+      team.teamName = nameTextField.text
+      team.qualifyingZone = zoneTextField.text
+      team.imageName = "wenderland-flag"
+
+      coreDataStack.saveContext()
+    }
+
+    alertController.addAction(saveAction)
+    alertController.addAction(
+      .init(title: "Cancel", style: .cancel)
+    )
+
+    present(alertController, animated: true)
+  }
 }
 
 // MARK: - Internal
