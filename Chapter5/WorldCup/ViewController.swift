@@ -41,12 +41,23 @@ class ViewController: UIViewController {
 
   lazy var fetchedResultsController: NSFetchedResultsController<Team> = {
     let fetchRequest: NSFetchRequest<Team> = Team.fetchRequest()
-    let sort = NSSortDescriptor(
+
+    let zoneSort = NSSortDescriptor(
+      key: #keyPath(Team.qualifyingZone),
+      ascending: true
+    )
+
+    let scoreSort = NSSortDescriptor(
+      key: #keyPath(Team.wins),
+      ascending: false
+    )
+
+    let nameSort = NSSortDescriptor(
       key: #keyPath(Team.teamName),
       ascending: true
     )
 
-    fetchRequest.sortDescriptors = [sort]
+    fetchRequest.sortDescriptors = [zoneSort, scoreSort, nameSort]
 
     let fetchResultController = NSFetchedResultsController(
       fetchRequest: fetchRequest,
