@@ -1,15 +1,15 @@
 /// Copyright (c) 2020 Razeware LLC
-/// 
+///
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
 /// of this software and associated documentation files (the "Software"), to deal
 /// in the Software without restriction, including without limitation the rights
 /// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 /// copies of the Software, and to permit persons to whom the Software is
 /// furnished to do so, subject to the following conditions:
-/// 
+///
 /// The above copyright notice and this permission notice shall be included in
 /// all copies or substantial portions of the Software.
-/// 
+///
 /// Notwithstanding the foregoing, you may not use, copy, modify, merge, publish,
 /// distribute, sublicense, create a derivative work, and/or sell copies of the
 /// Software in any work that is designed, intended, or marketed for pedagogical or
@@ -17,7 +17,7 @@
 /// or information technology.  Permission for such use, copying, modification,
 /// merger, publication, distribution, sublicensing, creation of derivative works,
 /// or sale is expressly withheld.
-/// 
+///
 /// This project and source code may use libraries or frameworks that are
 /// released under various Open-Source licenses. Use of those libraries and
 /// frameworks are governed by their own individual licenses.
@@ -30,26 +30,32 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 
-import Foundation
 import CoreData
+import Foundation
 
 class DataMigrationManager {
   let enableMigrations: Bool
   let modelName: String
   let storeName: String = "UnCloudNotesDataModel"
+
   var stack: CoreDataStack {
     guard enableMigrations,
-      !store(
-        at: storeURL,
-        isCompatibleWithModel: currentModel
-      )
-      else { return CoreDataStack(modelName: modelName) }
+          !store(
+            at: storeURL,
+            isCompatibleWithModel: currentModel
+          )
+    else {
+      return CoreDataStack(modelName: modelName)
+    }
 
     performMigration()
     return CoreDataStack(modelName: modelName)
   }
 
-  init(modelNamed: String, enableMigrations: Bool = false) {
+  init(
+    modelNamed: String,
+    enableMigrations: Bool = false
+  ) {
     self.modelName = modelNamed
     self.enableMigrations = enableMigrations
   }
@@ -59,23 +65,28 @@ class DataMigrationManager {
     isCompatibleWithModel model: NSManagedObjectModel
   ) -> Bool {
     let storeMetadata = metadataForStoreAtURL(storeURL: storeURL)
-    return model.isConfiguration(withName: nil, compatibleWithStoreMetadata: storeMetadata)
+
+    return model.isConfiguration(
+      withName: nil,
+      compatibleWithStoreMetadata: storeMetadata
+    )
   }
 
-  private func metadataForStoreAtURL(storeURL: URL)
-    -> [String: Any] {
-      let metadata: [String: Any]
-      do {
-        metadata = try NSPersistentStoreCoordinator
-          .metadataForPersistentStore(
-            ofType: NSSQLiteStoreType,
-            at: storeURL,
-            options: nil)
-      } catch {
-        metadata = [:]
-        print("Error retrieving metadata for store at URL:\(storeURL): \(error)")
-      }
-      return metadata
+  private func metadataForStoreAtURL(storeURL: URL) -> [String: Any] {
+    let metadata: [String: Any]
+
+    do {
+      metadata = try NSPersistentStoreCoordinator
+        .metadataForPersistentStore(
+          ofType: NSSQLiteStoreType,
+          at: storeURL,
+          options: nil
+        )
+    } catch {
+      metadata = [:]
+      print("Error retrieving metadata for store at URL:\(storeURL): \(error)")
+    }
+    return metadata
   }
 
   private var applicationSupportURL: URL {
@@ -84,12 +95,13 @@ class DataMigrationManager {
       .userDomainMask,
       true
     ).first
-    //swiftlint:disable:next force_unwrapping
+    // swiftlint:disable:next force_unwrapping
     return URL(fileURLWithPath: path!)
   }
 
   private lazy var storeURL: URL = {
     let storeFileName = "\(self.storeName).sqlite"
+
     return URL(
       fileURLWithPath: storeFileName,
       relativeTo: self.applicationSupportURL
@@ -97,11 +109,9 @@ class DataMigrationManager {
   }()
 
   private var storeModel: NSManagedObjectModel? {
-    return
-      NSManagedObjectModel.modelVersionsFor(modelNamed: modelName)
-      .first {
-        self.store(at: storeURL, isCompatibleWithModel: $0)
-      }
+    NSManagedObjectModel.modelVersionsFor(modelNamed: modelName).first {
+      self.store(at: storeURL, isCompatibleWithModel: $0)
+    }
   }
 
   private lazy var currentModel: NSManagedObjectModel = .model(named: self.modelName)
@@ -110,14 +120,16 @@ class DataMigrationManager {
     if !currentModel.isVersion4 {
       fatalError("Can only handle migrations to version 4!")
     }
-    if let storeModel = self.storeModel {
+    
+    if let storeModel = storeModel {
       if storeModel.isVersion1 {
         let destinationModel = NSManagedObjectModel.version2
 
         migrateStoreAt(
           URL: storeURL,
           fromModel: storeModel,
-          toModel: destinationModel)
+          toModel: destinationModel
+        )
 
         performMigration()
       } else if storeModel.isVersion2 {
@@ -125,13 +137,15 @@ class DataMigrationManager {
         let mappingModel = NSMappingModel(
           from: nil,
           forSourceModel: storeModel,
-          destinationModel: destinationModel)
+          destinationModel: destinationModel
+        )
 
         migrateStoreAt(
           URL: storeURL,
           fromModel: storeModel,
           toModel: destinationModel,
-          mappingModel: mappingModel)
+          mappingModel: mappingModel
+        )
 
         performMigration()
       } else if storeModel.isVersion3 {
@@ -139,18 +153,20 @@ class DataMigrationManager {
         let mappingModel = NSMappingModel(
           from: nil,
           forSourceModel: storeModel,
-          destinationModel: destinationModel)
+          destinationModel: destinationModel
+        )
 
         migrateStoreAt(
           URL: storeURL,
           fromModel: storeModel,
           toModel: destinationModel,
-          mappingModel: mappingModel)
+          mappingModel: mappingModel
+        )
       }
     }
   }
 
-  //swiftlint:disable identifier_name force_try
+  // swiftlint:disable identifier_name force_try
   private func migrateStoreAt(
     URL storeURL: URL,
     fromModel from: NSManagedObjectModel,
@@ -167,7 +183,8 @@ class DataMigrationManager {
     } else {
       migrationMappingModel = try! NSMappingModel
         .inferredMappingModel(
-          forSourceModel: from, destinationModel: to)
+          forSourceModel: from, destinationModel: to
+        )
     }
 
     // 3
@@ -191,7 +208,8 @@ class DataMigrationManager {
         with: migrationMappingModel,
         toDestinationURL: destinationURL,
         destinationType: NSSQLiteStoreType,
-        destinationOptions: nil)
+        destinationOptions: nil
+      )
       success = true
     } catch {
       success = false
@@ -207,13 +225,14 @@ class DataMigrationManager {
         try fileManager.removeItem(at: storeURL)
         try fileManager.moveItem(
           at: destinationURL,
-          to: storeURL)
+          to: storeURL
+        )
       } catch {
         print("Error migrating \(error)")
       }
     }
   }
-  //swiftlint:enable identifier_name force_try
+  // swiftlint:enable identifier_name force_try
 }
 
 extension NSManagedObjectModel {
@@ -230,9 +249,11 @@ extension NSManagedObjectModel {
   class var version1: NSManagedObjectModel {
     uncloudNotesModel(named: "UnCloudNotesDataModel")
   }
+
   var isVersion1: Bool {
     self == Self.version1
   }
+
   class var version2: NSManagedObjectModel {
     uncloudNotesModel(named: "UnCloudNotesDataModel v2")
   }
@@ -263,7 +284,8 @@ extension NSManagedObjectModel {
     Bundle.main
       .urls(
         forResourcesWithExtension: "mom",
-        subdirectory: "\(modelFolder).momd") ?? []
+        subdirectory: "\(modelFolder).momd"
+      ) ?? []
   }
 
   class func modelVersionsFor(
