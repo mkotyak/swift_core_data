@@ -1,15 +1,15 @@
 /// Copyright (c) 2020 Razeware LLC
-///
+/// 
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
 /// of this software and associated documentation files (the "Software"), to deal
 /// in the Software without restriction, including without limitation the rights
 /// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 /// copies of the Software, and to permit persons to whom the Software is
 /// furnished to do so, subject to the following conditions:
-///
+/// 
 /// The above copyright notice and this permission notice shall be included in
 /// all copies or substantial portions of the Software.
-///
+/// 
 /// Notwithstanding the foregoing, you may not use, copy, modify, merge, publish,
 /// distribute, sublicense, create a derivative work, and/or sell copies of the
 /// Software in any work that is designed, intended, or marketed for pedagogical or
@@ -17,7 +17,7 @@
 /// or information technology.  Permission for such use, copying, modification,
 /// merger, publication, distribution, sublicensing, creation of derivative works,
 /// or sale is expressly withheld.
-///
+/// 
 /// This project and source code may use libraries or frameworks that are
 /// released under various Open-Source licenses. Use of those libraries and
 /// frameworks are governed by their own individual licenses.
@@ -30,12 +30,11 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 
-import CoreData
 import UIKit
+import CoreData
 
 class CreateNoteViewController: UIViewController, UsesCoreDataObjects {
   // MARK: - Properties
-
   var managedObjectContext: NSManagedObjectContext?
   lazy var note: Note? = {
     guard let context = self.managedObjectContext else { return nil }
@@ -43,14 +42,12 @@ class CreateNoteViewController: UIViewController, UsesCoreDataObjects {
   }()
 
   // MARK: - IBOutlets
-
   @IBOutlet private var titleField: UITextField!
   @IBOutlet private var bodyField: UITextView!
   @IBOutlet private var attachPhotoButton: UIButton!
   @IBOutlet private var attachedPhoto: UIImageView!
 
   // MARK: - View Life Cycle
-
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
 
@@ -64,7 +61,6 @@ class CreateNoteViewController: UIViewController, UsesCoreDataObjects {
   }
 
   // MARK: - Navigation
-
   override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
     guard let nextViewController = segue.destination as? NoteDisplayable else { return }
 
@@ -73,13 +69,11 @@ class CreateNoteViewController: UIViewController, UsesCoreDataObjects {
 }
 
 // MARK: - IBActions
-
 extension CreateNoteViewController {
   @IBAction func saveNote() {
     guard let note = note,
-          let managedObjectContext = managedObjectContext
-    else {
-      return
+      let managedObjectContext = managedObjectContext else {
+        return
     }
 
     managedObjectContext.performAndWait {
@@ -98,7 +92,6 @@ extension CreateNoteViewController {
 }
 
 // MARK: - UITextFieldDelegate
-
 extension CreateNoteViewController: UITextFieldDelegate {
   func textFieldShouldReturn(_ textField: UITextField) -> Bool {
     saveNote()
@@ -108,5 +101,5 @@ extension CreateNoteViewController: UITextFieldDelegate {
 }
 
 // MARK: - UITextViewDelegate
-
-extension CreateNoteViewController: UITextViewDelegate {}
+extension CreateNoteViewController: UITextViewDelegate {
+}

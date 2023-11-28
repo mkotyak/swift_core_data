@@ -1,15 +1,15 @@
 /// Copyright (c) 2020 Razeware LLC
-///
+/// 
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
 /// of this software and associated documentation files (the "Software"), to deal
 /// in the Software without restriction, including without limitation the rights
 /// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 /// copies of the Software, and to permit persons to whom the Software is
 /// furnished to do so, subject to the following conditions:
-///
+/// 
 /// The above copyright notice and this permission notice shall be included in
 /// all copies or substantial portions of the Software.
-///
+/// 
 /// Notwithstanding the foregoing, you may not use, copy, modify, merge, publish,
 /// distribute, sublicense, create a derivative work, and/or sell copies of the
 /// Software in any work that is designed, intended, or marketed for pedagogical or
@@ -17,7 +17,7 @@
 /// or information technology.  Permission for such use, copying, modification,
 /// merger, publication, distribution, sublicensing, creation of derivative works,
 /// or sale is expressly withheld.
-///
+/// 
 /// This project and source code may use libraries or frameworks that are
 /// released under various Open-Source licenses. Use of those libraries and
 /// frameworks are governed by their own individual licenses.
@@ -30,13 +30,15 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 
-import CoreData
 import UIKit
+import CoreData
 
 class NotesListViewController: UITableViewController {
   // MARK: - Properties
-
-  private lazy var stack = CoreDataStack(modelName: "UnCloudNotesDataModel")
+  private lazy var stack: CoreDataStack = {
+    let manager = DataMigrationManager(modelNamed: "UnCloudNotesDataModel", enableMigrations: true)
+    return manager.stack
+  }()
 
   private lazy var notes: NSFetchedResultsController<Note> = {
     let context = self.stack.managedContext
@@ -47,14 +49,12 @@ class NotesListViewController: UITableViewController {
       fetchRequest: request,
       managedObjectContext: context,
       sectionNameKeyPath: nil,
-      cacheName: nil
-    )
+      cacheName: nil)
     notes.delegate = self
     return notes
   }()
 
   // MARK: - View Life Cycle
-
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
 
@@ -68,24 +68,20 @@ class NotesListViewController: UITableViewController {
   }
 
   // MARK: - Navigation
-
   override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
     if let navController = segue.destination as? UINavigationController,
-       let viewController = navController.topViewController as? UsesCoreDataObjects
-    {
-      viewController.managedObjectContext = stack.savingContext
+      let viewController = navController.topViewController as? UsesCoreDataObjects {
+        viewController.managedObjectContext = stack.savingContext
     }
 
     if let detailView = segue.destination as? NoteDisplayable,
-       let selectedIndex = tableView.indexPathForSelectedRow
-    {
-      detailView.note = notes.object(at: selectedIndex)
+      let selectedIndex = tableView.indexPathForSelectedRow {
+        detailView.note = notes.object(at: selectedIndex)
     }
   }
 }
 
 // MARK: - IBActions
-
 extension NotesListViewController {
   @IBAction func unwindToNotesList(_ segue: UIStoryboardSegue) {
     print("Unwinding to Notes List")
@@ -95,44 +91,32 @@ extension NotesListViewController {
 }
 
 // MARK: - UITableViewDataSource
-
 extension NotesListViewController {
-  override func tableView(
-    _ tableView: UITableView,
-    numberOfRowsInSection section: Int
-  ) -> Int {
+  override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     let objects = notes.fetchedObjects
     return objects?.count ?? 0
   }
 
-  override func tableView(
-    _ tableView: UITableView,
-    cellForRowAt indexPath: IndexPath
-  ) -> UITableViewCell {
+  // swiftlint:disable force_cast
+  override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let note = notes.object(at: indexPath)
     let cell: NoteTableViewCell
-
     if note.image == nil {
-      cell = tableView.dequeueReusableCell(
-        withIdentifier: "NoteCell",
-        for: indexPath
-      ) as! NoteTableViewCell
+      cell = tableView.dequeueReusableCell(withIdentifier: "NoteCell", for: indexPath) as! NoteTableViewCell
     } else {
-      cell = tableView.dequeueReusableCell(
-        withIdentifier: "NoteCellWithImage",
-        for: indexPath
-      ) as! NoteImageTableViewCell
+      cell = tableView.dequeueReusableCell(withIdentifier: "NoteCellWithImage", for: indexPath)
+        as! NoteImageTableViewCell
     }
-
     cell.note = note
     return cell
   }
+  // swiftlint:enable force_cast
 }
 
 // MARK: - NSFetchedResultsControllerDelegate
-
 extension NotesListViewController: NSFetchedResultsControllerDelegate {
-  func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {}
+  func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+  }
 
   func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
     let wrapIndexPath: (IndexPath?) -> [IndexPath] = { $0.map { [$0] } ?? [] }
@@ -149,5 +133,6 @@ extension NotesListViewController: NSFetchedResultsControllerDelegate {
     }
   }
 
-  func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {}
+  func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+  }
 }
