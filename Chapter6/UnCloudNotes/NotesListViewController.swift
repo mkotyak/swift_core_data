@@ -47,7 +47,8 @@ class NotesListViewController: UITableViewController {
       fetchRequest: request,
       managedObjectContext: context,
       sectionNameKeyPath: nil,
-      cacheName: nil)
+      cacheName: nil
+    )
     notes.delegate = self
     return notes
   }()
@@ -96,15 +97,34 @@ extension NotesListViewController {
 // MARK: - UITableViewDataSource
 
 extension NotesListViewController {
-  override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+  override func tableView(
+    _ tableView: UITableView,
+    numberOfRowsInSection section: Int
+  ) -> Int {
     let objects = notes.fetchedObjects
     return objects?.count ?? 0
   }
 
-  override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-    // swiftlint:disable:next force_cast
-    let cell = tableView.dequeueReusableCell(withIdentifier: "NoteCell", for: indexPath) as! NoteTableViewCell
-    cell.note = notes.object(at: indexPath)
+  override func tableView(
+    _ tableView: UITableView,
+    cellForRowAt indexPath: IndexPath
+  ) -> UITableViewCell {
+    let note = notes.object(at: indexPath)
+    let cell: NoteTableViewCell
+
+    if note.image == nil {
+      cell = tableView.dequeueReusableCell(
+        withIdentifier: "NoteCell",
+        for: indexPath
+      ) as! NoteTableViewCell
+    } else {
+      cell = tableView.dequeueReusableCell(
+        withIdentifier: "NoteCellWithImage",
+        for: indexPath
+      ) as! NoteImageTableViewCell
+    }
+
+    cell.note = note
     return cell
   }
 }
