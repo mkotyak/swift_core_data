@@ -1,35 +1,3 @@
-/// Copyright (c) 2020 Razeware LLC
-///
-/// Permission is hereby granted, free of charge, to any person obtaining a copy
-/// of this software and associated documentation files (the "Software"), to deal
-/// in the Software without restriction, including without limitation the rights
-/// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-/// copies of the Software, and to permit persons to whom the Software is
-/// furnished to do so, subject to the following conditions:
-///
-/// The above copyright notice and this permission notice shall be included in
-/// all copies or substantial portions of the Software.
-///
-/// Notwithstanding the foregoing, you may not use, copy, modify, merge, publish,
-/// distribute, sublicense, create a derivative work, and/or sell copies of the
-/// Software in any work that is designed, intended, or marketed for pedagogical or
-/// instructional purposes related to programming, coding, application development,
-/// or information technology.  Permission for such use, copying, modification,
-/// merger, publication, distribution, sublicensing, creation of derivative works,
-/// or sale is expressly withheld.
-///
-/// This project and source code may use libraries or frameworks that are
-/// released under various Open-Source licenses. Use of those libraries and
-/// frameworks are governed by their own individual licenses.
-///
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-/// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-/// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-/// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-/// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-/// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-/// THE SOFTWARE.
-
 import CoreData
 import Foundation
 
@@ -76,16 +44,16 @@ class DataMigrationManager {
     let metadata: [String: Any]
 
     do {
-      metadata = try NSPersistentStoreCoordinator
-        .metadataForPersistentStore(
-          ofType: NSSQLiteStoreType,
-          at: storeURL,
-          options: nil
-        )
+      metadata = try NSPersistentStoreCoordinator.metadataForPersistentStore(
+        ofType: NSSQLiteStoreType,
+        at: storeURL,
+        options: nil
+      )
     } catch {
       metadata = [:]
       print("Error retrieving metadata for store at URL:\(storeURL): \(error)")
     }
+
     return metadata
   }
 
@@ -95,7 +63,7 @@ class DataMigrationManager {
       .userDomainMask,
       true
     ).first
-    // swiftlint:disable:next force_unwrapping
+
     return URL(fileURLWithPath: path!)
   }
 
@@ -110,7 +78,10 @@ class DataMigrationManager {
 
   private var storeModel: NSManagedObjectModel? {
     NSManagedObjectModel.modelVersionsFor(modelNamed: modelName).first {
-      self.store(at: storeURL, isCompatibleWithModel: $0)
+      self.store(
+        at: storeURL,
+        isCompatibleWithModel: $0
+      )
     }
   }
 
@@ -120,8 +91,8 @@ class DataMigrationManager {
     if !currentModel.isVersion4 {
       fatalError("Can only handle migrations to version 4!")
     }
-    
-    if let storeModel = storeModel {
+
+    if let storeModel {
       if storeModel.isVersion1 {
         let destinationModel = NSManagedObjectModel.version2
 
@@ -166,7 +137,6 @@ class DataMigrationManager {
     }
   }
 
-  // swiftlint:disable identifier_name force_try
   private func migrateStoreAt(
     URL storeURL: URL,
     fromModel from: NSManagedObjectModel,
@@ -174,24 +144,27 @@ class DataMigrationManager {
     mappingModel: NSMappingModel? = nil
   ) {
     // 1
-    let migrationManager = NSMigrationManager(sourceModel: from, destinationModel: to)
+    let migrationManager = NSMigrationManager(
+      sourceModel: from,
+      destinationModel: to
+    )
 
     // 2
     var migrationMappingModel: NSMappingModel
-    if let mappingModel = mappingModel {
+
+    if let mappingModel {
       migrationMappingModel = mappingModel
     } else {
-      migrationMappingModel = try! NSMappingModel
-        .inferredMappingModel(
-          forSourceModel: from, destinationModel: to
-        )
+      migrationMappingModel = try! NSMappingModel.inferredMappingModel(
+        forSourceModel: from,
+        destinationModel: to
+      )
     }
 
     // 3
     let targetURL = storeURL.deletingLastPathComponent()
     let destinationName = storeURL.lastPathComponent + "~1"
-    let destinationURL = targetURL
-      .appendingPathComponent(destinationName)
+    let destinationURL = targetURL.appendingPathComponent(destinationName)
 
     print("From Model: \(from.entityVersionHashesByName)")
     print("To Model: \(to.entityVersionHashesByName)")
@@ -200,6 +173,7 @@ class DataMigrationManager {
 
     // 4
     let success: Bool
+    
     do {
       try migrationManager.migrateStore(
         from: storeURL,
@@ -232,8 +206,9 @@ class DataMigrationManager {
       }
     }
   }
-  // swiftlint:enable identifier_name force_try
 }
+
+// MARK: - NSManagedObjectModel
 
 extension NSManagedObjectModel {
   class func model(
@@ -278,29 +253,22 @@ extension NSManagedObjectModel {
     self == Self.version4
   }
 
-  private class func modelURLs(
-    in modelFolder: String
-  ) -> [URL] {
-    Bundle.main
-      .urls(
-        forResourcesWithExtension: "mom",
-        subdirectory: "\(modelFolder).momd"
-      ) ?? []
+  private class func modelURLs(in modelFolder: String) -> [URL] {
+    Bundle.main.urls(
+      forResourcesWithExtension: "mom",
+      subdirectory: "\(modelFolder).momd"
+    ) ?? []
   }
 
-  class func modelVersionsFor(
-    modelNamed modelName: String
-  ) -> [NSManagedObjectModel] {
-    modelURLs(in: modelName)
-      .compactMap(NSManagedObjectModel.init)
+  class func modelVersionsFor(modelNamed modelName: String) -> [NSManagedObjectModel] {
+    modelURLs(in: modelName).compactMap(NSManagedObjectModel.init)
   }
 
-  class func uncloudNotesModel(
-    named modelName: String
-  ) -> NSManagedObjectModel {
+  class func uncloudNotesModel(named modelName: String) -> NSManagedObjectModel {
     let model = modelURLs(in: "UnCloudNotesDataModel")
       .first { $0.lastPathComponent == "\(modelName).mom" }
       .flatMap(NSManagedObjectModel.init)
+
     return model ?? NSManagedObjectModel()
   }
 }
