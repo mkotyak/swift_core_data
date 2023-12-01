@@ -26,9 +26,9 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 
+@testable import EmployeeDirectory
 import UIKit
 import XCTest
-@testable import EmployeeDirectory
 
 class DepartmentDetailsViewControllerTests: XCTestCase {
   func testTotalEmployeesFetchPerformance() {
@@ -40,6 +40,19 @@ class DepartmentDetailsViewControllerTests: XCTestCase {
       departmentDetails.coreDataStack = CoreDataStack(modelName: "EmployeeDirectory")
       startMeasuring()
       _ = departmentDetails.totalEmployees("Engineering")
+      stopMeasuring()
+    }
+  }
+  
+  func testTotalEmployeesFetchPerformanceFast() {
+    measureMetrics(
+      [.wallClockTime],
+      automaticallyStartMeasuring: false
+    ) {
+      let departmentDetails = DepartmentDetailsViewController()
+      departmentDetails.coreDataStack = CoreDataStack(modelName: "EmployeeDirectory")
+      startMeasuring()
+      _ = departmentDetails.totalEmployeesFast("Engineering")
       stopMeasuring()
     }
   }

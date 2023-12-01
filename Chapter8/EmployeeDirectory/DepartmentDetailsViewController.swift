@@ -26,17 +26,19 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 
-import UIKit
 import CoreData
+import UIKit
 
 class DepartmentDetailsViewController: UIViewController {
   // MARK: Properties
-  //swiftlint:disable:next implicitly_unwrapped_optional
+
+  // swiftlint:disable:next implicitly_unwrapped_optional
   var coreDataStack: CoreDataStack!
 
   var department: String?
 
   // MARK: IBOutlets
+
   @IBOutlet var totalEmployeesLabel: UILabel!
   @IBOutlet var activeEmployeesLabel: UILabel!
   @IBOutlet var greaterThanFifteenVacationDaysLabel: UILabel!
@@ -46,6 +48,7 @@ class DepartmentDetailsViewController: UIViewController {
   @IBOutlet var zeroVacationDaysLabel: UILabel!
 
   // MARK: View Life Cycle
+
   override func viewDidLoad() {
     super.viewDidLoad()
     configureView()
@@ -53,13 +56,14 @@ class DepartmentDetailsViewController: UIViewController {
 }
 
 // MARK: Internal
+
 extension DepartmentDetailsViewController {
   func configureView() {
     guard let department = department else { return }
 
     title = department
 
-    totalEmployeesLabel.text = totalEmployees(department)
+    totalEmployeesLabel.text = totalEmployeesFast(department)
     activeEmployeesLabel.text = activeEmployees(department)
 
     greaterThanFifteenVacationDaysLabel.text =
@@ -87,6 +91,22 @@ extension DepartmentDetailsViewController {
     do {
       let results = try coreDataStack.mainContext.fetch(fetchRequest)
       return String(results.count)
+    } catch let error as NSError {
+      print("Error: \(error.localizedDescription)")
+      return "0"
+    }
+  }
+
+  func totalEmployeesFast(_ department: String) -> String {
+    let fetchRequest: NSFetchRequest<Employee> = Employee.fetchRequest()
+    fetchRequest.predicate = NSPredicate(
+      format: "%K = %@",
+      argumentArray: [#keyPath(Employee.department), department]
+    )
+
+    do {
+      let results = try coreDataStack.mainContext.count(for: fetchRequest)
+      return "\(results)"
     } catch let error as NSError {
       print("Error: \(error.localizedDescription)")
       return "0"
