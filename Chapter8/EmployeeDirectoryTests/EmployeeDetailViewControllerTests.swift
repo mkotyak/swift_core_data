@@ -1,4 +1,4 @@
-//swiftlint:disable force_cast force_unwrapping
+// swiftlint:disable force_cast force_unwrapping
 /// Copyright (c) 2020 Razeware LLC
 ///
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,10 +27,10 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 
-import UIKit
-import XCTest
 import CoreData
 @testable import EmployeeDirectory
+import UIKit
+import XCTest
 
 class EmployeeDetailViewControllerTests: XCTestCase {
   func testCountSales() {
@@ -42,6 +42,19 @@ class EmployeeDetailViewControllerTests: XCTestCase {
       let employeeDetails = EmployeeDetailViewController()
       startMeasuring()
       _ = employeeDetails.salesCountForEmployee(employee)
+      stopMeasuring()
+    }
+  }
+
+  func testCountSalesFast() {
+    measureMetrics(
+      [.wallClockTime],
+      automaticallyStartMeasuring: false
+    ) {
+      let employee = getEmployee()
+      let employeeDetails = EmployeeDetailViewController()
+      startMeasuring()
+      _ = employeeDetails.salesCountForEmployeeFast(employee)
       stopMeasuring()
     }
   }

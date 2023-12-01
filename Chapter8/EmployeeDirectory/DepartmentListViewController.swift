@@ -107,24 +107,20 @@ extension DepartmentListViewController {
   }
 
   func totalEmployeesPerDepartmentFast() -> [[String: String]] {
-    // 1
     let expressionDescription = NSExpressionDescription()
     expressionDescription.name = "headCount"
 
-    // 2
     let arguments = [NSExpression(forKeyPath: "department")]
     expressionDescription.expression = NSExpression(
       forFunction: "count:",
       arguments: arguments
     )
 
-    // 3
     let fetchRequest: NSFetchRequest<NSDictionary> = NSFetchRequest(entityName: "Employee")
     fetchRequest.propertiesToFetch = ["department", expressionDescription]
     fetchRequest.propertiesToGroupBy = ["department"]
     fetchRequest.resultType = .dictionaryResultType
 
-    // 4
     var fetchResult: [NSDictionary] = []
     do {
       fetchResult = try coreDataStack.mainContext.fetch(fetchRequest)
