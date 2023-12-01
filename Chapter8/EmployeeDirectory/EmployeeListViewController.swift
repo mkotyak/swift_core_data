@@ -90,6 +90,7 @@ extension EmployeeListViewController {
 
   func employeeFetchRequest(_ department: String?) -> NSFetchRequest<Employee> {
     let fetchRequest: NSFetchRequest<Employee> = Employee.fetchRequest()
+    fetchRequest.fetchBatchSize = 10
 
     let sortDescriptor = NSSortDescriptor(key: "startDate", ascending: true)
     fetchRequest.sortDescriptors = [sortDescriptor]
