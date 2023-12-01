@@ -30,12 +30,15 @@ import UIKit
 
 class EmployeePictureViewController: UIViewController {
   // MARK: - Properties
+
   var employee: Employee?
 
   // MARK: - IBOutlets
+
   @IBOutlet var employeePictureImageView: UIImageView!
 
   // MARK: - View Life Cycle
+
   override func viewDidLoad() {
     super.viewDidLoad()
 
@@ -44,6 +47,7 @@ class EmployeePictureViewController: UIViewController {
 }
 
 // MARK: - IBActions
+
 extension EmployeePictureViewController {
   @IBAction func userTappedPicture(_ sender: UITapGestureRecognizer) {
     dismiss(animated: true)
@@ -51,9 +55,10 @@ extension EmployeePictureViewController {
 }
 
 // MARK: - Private
+
 private extension EmployeePictureViewController {
   func configureView() {
-    guard let employeePicture = employee?.picture else {
+    guard let employeePicture = employee?.picture?.picture else {
       return
     }
 

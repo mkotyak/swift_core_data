@@ -26,43 +26,44 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 
-import Foundation
 import CoreData
+import Foundation
 
-public class Employee: NSManagedObject {
-}
+public class Employee: NSManagedObject {}
 
-extension Employee {
+public extension Employee {
   @nonobjc
-  public class func fetchRequest() -> NSFetchRequest<Employee> {
-    return NSFetchRequest<Employee>(entityName: "Employee")
+  class func fetchRequest() -> NSFetchRequest<Employee> {
+    NSFetchRequest<Employee>(entityName: "Employee")
   }
 
-  @NSManaged public var about: String?
-  @NSManaged public var active: NSNumber?
-  @NSManaged public var address: String?
-  @NSManaged public var department: String?
-  @NSManaged public var email: String?
-  @NSManaged public var guid: String?
-  @NSManaged public var name: String?
-  @NSManaged public var phone: String?
-  @NSManaged public var picture: Data?
-  @NSManaged public var startDate: Date?
-  @NSManaged public var vacationDays: NSNumber?
-  @NSManaged public var sales: NSSet?
+  @NSManaged var about: String?
+  @NSManaged var active: NSNumber?
+  @NSManaged var address: String?
+  @NSManaged var department: String?
+  @NSManaged var email: String?
+  @NSManaged var guid: String?
+  @NSManaged var name: String?
+  @NSManaged var phone: String?
+  @NSManaged var pictureThumbnail: Data?
+  @NSManaged var picture: EmployeePicture?
+  @NSManaged var startDate: Date?
+  @NSManaged var vacationDays: NSNumber?
+  @NSManaged var sales: NSSet?
 }
 
 // MARK: Generated accessors for sales
-extension Employee {
+
+public extension Employee {
   @objc(addSalesObject:)
-  @NSManaged public func addToSales(_ value: Sale)
+  @NSManaged func addToSales(_ value: Sale)
 
   @objc(removeSalesObject:)
-  @NSManaged public func removeFromSales(_ value: Sale)
+  @NSManaged func removeFromSales(_ value: Sale)
 
   @objc(addSales:)
-  @NSManaged public func addToSales(_ values: NSSet)
+  @NSManaged func addToSales(_ values: NSSet)
 
   @objc(removeSales:)
-  @NSManaged public func removeFromSales(_ values: NSSet)
+  @NSManaged func removeFromSales(_ values: NSSet)
 }

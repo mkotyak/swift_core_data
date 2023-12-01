@@ -26,8 +26,8 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 
-import UIKit
 import CoreData
+import UIKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -47,16 +47,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       let tabController = window?.rootViewController as? UITabBarController,
       let employeeListNavigationController = tabController.viewControllers?[0] as? UINavigationController,
       let employeeListViewController = employeeListNavigationController.topViewController
-        as? EmployeeListViewController else {
-        fatalError("Application storyboard mis-configuration. Application is mis-configured")
+      as? EmployeeListViewController
+    else {
+      fatalError("Application storyboard mis-configuration. Application is mis-configured")
     }
 
     employeeListViewController.coreDataStack = coreDataStack
 
     guard let departmentListNavigationController = tabController.viewControllers?[1] as? UINavigationController,
-      let departmentListViewController = departmentListNavigationController.topViewController
-        as? DepartmentListViewController else {
-        fatalError("Application storyboard mis-configuration. Application is mis-configured")
+          let departmentListViewController = departmentListNavigationController.topViewController
+          as? DepartmentListViewController
+    else {
+      fatalError("Application storyboard mis-configuration. Application is mis-configured")
     }
 
     departmentListViewController.coreDataStack = coreDataStack
@@ -70,6 +72,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 }
 
 // MARK: Data Import
+
 extension AppDelegate {
   func importJSONSeedDataIfNeeded() {
     var importRequired = false
@@ -88,7 +91,8 @@ extension AppDelegate {
     }
 
     if !importRequired,
-      addSalesRecords {
+       addSalesRecords
+    {
       let salesFetch: NSFetchRequest<Sale> = Sale.fetchRequest()
 
       var salesCount = -1
@@ -123,7 +127,6 @@ extension AppDelegate {
     }
   }
 
-  //swiftlint:disable force_unwrapping force_try force_cast
   func importJSONSeedData(_ records: Int) {
     let jsonURL = Bundle.main.url(forResource: "seed", withExtension: "json")!
     let jsonData = try! Data(contentsOf: jsonURL)
@@ -159,7 +162,8 @@ extension AppDelegate {
       let pictureFileExtension = pictureComponents[1]
       let pictureURL = Bundle.main.url(
         forResource: pictureFileName,
-        withExtension: pictureFileExtension)!
+        withExtension: pictureFileExtension
+      )!
       let pictureData = try! Data(contentsOf: pictureURL)
 
       let employee = Employee(context: coreDataStack.mainContext)
@@ -173,7 +177,14 @@ extension AppDelegate {
       employee.phone = phone
       employee.address = address
       employee.about = about
-      employee.picture = pictureData
+      employee.pictureThumbnail = imageDataScaledToHeight(
+        pictureData,
+        height: 120
+      )
+
+      let pictureObject = EmployeePicture(context: coreDataStack.mainContext)
+      pictureObject.picture = pictureData
+      employee.picture = pictureObject
 
       if addSalesRecords {
         addSalesRecordsToEmployee(employee)
@@ -209,7 +220,8 @@ extension AppDelegate {
 
     return newImage!.jpegData(compressionQuality: 0.8)!
   }
-  //swiftlint:enable force_unwrapping force_try force_cast
+
+  // swiftlint:enable force_unwrapping force_try force_cast
 
   func addSalesRecordsToEmployee(_ employee: Employee) {
     let numberOfSales = 1000 + .random(in: 0...5000)
