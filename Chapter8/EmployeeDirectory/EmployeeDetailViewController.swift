@@ -143,4 +143,8 @@ extension EmployeeDetailViewController {
       return "0"
     }
   }
+
+  func salesCountForEmployeeSimple(_ employee: Employee) -> String {
+    "\(employee.sales?.count ?? 0)"
+  }
 }

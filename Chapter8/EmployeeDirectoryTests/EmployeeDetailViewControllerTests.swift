@@ -58,6 +58,19 @@ class EmployeeDetailViewControllerTests: XCTestCase {
       stopMeasuring()
     }
   }
+  
+  func testCountSalesSimple() {
+    measureMetrics(
+      [.wallClockTime],
+      automaticallyStartMeasuring: false
+    ) {
+      let employee = getEmployee()
+      let employeeDetails = EmployeeDetailViewController()
+      startMeasuring()
+      _ = employeeDetails.salesCountForEmployeeSimple(employee)
+      stopMeasuring()
+    }
+  }
 
   func getEmployee() -> Employee {
     let coreDataStack = CoreDataStack(modelName: "EmployeeDirectory")
