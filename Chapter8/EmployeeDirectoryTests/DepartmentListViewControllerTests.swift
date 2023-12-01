@@ -26,10 +26,37 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 
+@testable import EmployeeDirectory
 import UIKit
 import XCTest
-@testable import EmployeeDirectory
 
 class DepartmentListViewControllerTests: XCTestCase {
-  // Add tests here
+  func testTotalEmployeesPerDepartment() {
+    measureMetrics(
+      [.wallClockTime],
+      automaticallyStartMeasuring: false
+    ) {
+      let departmentList = DepartmentListViewController()
+      departmentList.coreDataStack = CoreDataStack(modelName: "EmployeeDirectory")
+
+      startMeasuring()
+      _ = departmentList.totalEmployeesPerDepartment()
+      stopMeasuring()
+    }
+  }
+
+  func testTotalEmployeesPerDepartmentFast() {
+    measureMetrics(
+      [.wallClockTime],
+      automaticallyStartMeasuring: false
+    ) {
+      let departmentList = DepartmentListViewController()
+      departmentList.coreDataStack =
+        CoreDataStack(modelName: "EmployeeDirectory")
+
+      startMeasuring()
+      _ = departmentList.totalEmployeesPerDepartmentFast()
+      stopMeasuring()
+    }
+  }
 }
