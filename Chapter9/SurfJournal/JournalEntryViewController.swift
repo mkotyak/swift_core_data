@@ -26,29 +26,36 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 
-import UIKit
 import CoreData
+import UIKit
 
 // MARK: JournalEntryDelegate
+
 protocol JournalEntryDelegate: AnyObject {
-  func didFinish(viewController: JournalEntryViewController, didSave: Bool)
+  func didFinish(
+    viewController: JournalEntryViewController,
+    didSave: Bool
+  )
 }
 
 class JournalEntryViewController: UITableViewController {
   // MARK: Properties
+
   var journalEntry: JournalEntry?
-  //swiftlint:disable:next implicitly_unwrapped_optional
+  // swiftlint:disable:next implicitly_unwrapped_optional
   var context: NSManagedObjectContext!
   weak var delegate: JournalEntryDelegate?
 
   // MARK: IBOutlets
-  @IBOutlet weak var heightTextField: UITextField!
-  @IBOutlet weak var periodTextField: UITextField!
-  @IBOutlet weak var windTextField: UITextField!
-  @IBOutlet weak var locationTextField: UITextField!
-  @IBOutlet weak var ratingSegmentedControl: UISegmentedControl!
+
+  @IBOutlet var heightTextField: UITextField!
+  @IBOutlet var periodTextField: UITextField!
+  @IBOutlet var windTextField: UITextField!
+  @IBOutlet var locationTextField: UITextField!
+  @IBOutlet var ratingSegmentedControl: UISegmentedControl!
 
   // MARK: View Life Cycle
+
   override func viewDidLoad() {
     super.viewDidLoad()
 
@@ -57,6 +64,7 @@ class JournalEntryViewController: UITableViewController {
 }
 
 // MARK: Private
+
 private extension JournalEntryViewController {
   func configureView() {
     guard let journalEntry = journalEntry else { return }
@@ -86,13 +94,20 @@ private extension JournalEntryViewController {
 }
 
 // MARK: IBActions
+
 extension JournalEntryViewController {
   @IBAction func cancelButtonWasTapped(_ sender: UIBarButtonItem) {
-    delegate?.didFinish(viewController: self, didSave: false)
+    delegate?.didFinish(
+      viewController: self,
+      didSave: false
+    )
   }
 
   @IBAction func saveButtonWasTapped(_ sender: UIBarButtonItem) {
     updateJournalEntry()
-    delegate?.didFinish(viewController: self, didSave: true)
+    delegate?.didFinish(
+      viewController: self,
+      didSave: true
+    )
   }
 }
