@@ -77,8 +77,11 @@ class JournalListViewController: UITableViewController {
       else {
         fatalError("Application storyboard mis-configuration")
       }
+      
+      let childContext = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
+      childContext.parent = coreDataStack.mainContext
 
-      let newJournalEntry = JournalEntry(context: coreDataStack.mainContext)
+      let newJournalEntry = JournalEntry(context: childContext)
       detailViewController.journalEntry = newJournalEntry
       detailViewController.context = newJournalEntry.managedObjectContext
       detailViewController.delegate = self
