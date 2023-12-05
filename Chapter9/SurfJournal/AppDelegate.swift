@@ -26,8 +26,8 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 
-import UIKit
 import CoreData
+import UIKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -43,7 +43,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     guard
       let navigationController = window?.rootViewController as? UINavigationController,
       let listViewController = navigationController.topViewController
-        as? JournalListViewController else {
+      as? JournalListViewController
+    else {
       fatalError("Application Storyboard mis-configuration")
     }
 

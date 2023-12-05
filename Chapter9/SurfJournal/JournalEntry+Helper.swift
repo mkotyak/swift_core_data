@@ -26,15 +26,18 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 
-import Foundation
 import CoreData
+import Foundation
 
 extension JournalEntry {
   func stringForDate() -> String {
-    guard let date = date else { return "" }
+    guard let date = date else {
+      return ""
+    }
 
     let dateFormatter = DateFormatter()
     dateFormatter.dateStyle = .short
+
     return dateFormatter.string(from: date)
   }
 

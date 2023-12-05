@@ -26,19 +26,21 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 
-import UIKit
 import CoreData
+import UIKit
 
 class JournalListViewController: UITableViewController {
   // MARK: Properties
-  //swiftlint:disable:next implicitly_unwrapped_optional
+
   var coreDataStack: CoreDataStack!
   var fetchedResultsController: NSFetchedResultsController<JournalEntry> = NSFetchedResultsController()
 
   // MARK: IBOutlets
-  @IBOutlet weak var exportButton: UIBarButtonItem!
+
+  @IBOutlet var exportButton: UIBarButtonItem!
 
   // MARK: View Life Cycle
+
   override func viewDidLoad() {
     super.viewDidLoad()
 
@@ -46,29 +48,31 @@ class JournalListViewController: UITableViewController {
   }
 
   // MARK: Navigation
-  override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-    // 1
+
+  override func prepare(
+    for segue: UIStoryboardSegue,
+    sender: Any?
+  ) {
     if segue.identifier == "SegueListToDetail" {
-      // 2
       guard let navigationController = segue.destination as? UINavigationController,
-        let detailViewController = navigationController.topViewController as? JournalEntryViewController,
-        let indexPath = tableView.indexPathForSelectedRow else {
-          fatalError("Application storyboard mis-configuration")
+            let detailViewController = navigationController.topViewController as? JournalEntryViewController,
+            let indexPath = tableView.indexPathForSelectedRow
+      else {
+        fatalError("Application storyboard mis-configuration")
       }
-      // 3
+
       let surfJournalEntry = fetchedResultsController.object(at: indexPath)
-      // 4
       detailViewController.journalEntry = surfJournalEntry
       detailViewController.context = surfJournalEntry.managedObjectContext
       detailViewController.delegate = self
     } else if segue.identifier == "SegueListToDetailAdd" {
       guard let navigationController = segue.destination as? UINavigationController,
-        let detailViewController = navigationController.topViewController as? JournalEntryViewController else {
-          fatalError("Application storyboard mis-configuration")
+            let detailViewController = navigationController.topViewController as? JournalEntryViewController
+      else {
+        fatalError("Application storyboard mis-configuration")
       }
 
       let newJournalEntry = JournalEntry(context: coreDataStack.mainContext)
-
       detailViewController.journalEntry = newJournalEntry
       detailViewController.context = newJournalEntry.managedObjectContext
       detailViewController.delegate = self
@@ -77,6 +81,7 @@ class JournalListViewController: UITableViewController {
 }
 
 // MARK: IBActions
+
 extension JournalListViewController {
   @IBAction func exportButtonTapped(_ sender: UIBarButtonItem) {
     exportCSVFile()
@@ -84,6 +89,7 @@ extension JournalListViewController {
 }
 
 // MARK: Private
+
 private extension JournalListViewController {
   func configureView() {
     fetchedResultsController = journalListFetchedResultsController()
@@ -96,7 +102,7 @@ private extension JournalListViewController {
     let context = coreDataStack.mainContext
     var results: [JournalEntry] = []
     do {
-      results = try context.fetch(self.surfJournalFetchRequest())
+      results = try context.fetch(surfJournalFetchRequest())
     } catch let error as NSError {
       print("ERROR: \(error.localizedDescription)")
     }
@@ -121,8 +127,9 @@ private extension JournalListViewController {
         fileHandle.seekToEndOfFile()
         guard let csvData = journalEntry
           .csv()
-          .data(using: .utf8, allowLossyConversion: false) else {
-            continue
+          .data(using: .utf8, allowLossyConversion: false)
+        else {
+          continue
         }
 
         fileHandle.write(csvData)
@@ -132,10 +139,10 @@ private extension JournalListViewController {
       fileHandle.closeFile()
 
       print("Export Path: \(exportFilePath)")
-      self.navigationItem.leftBarButtonItem = self.exportBarButtonItem()
-      self.showExportFinishedAlertView(exportFilePath)
+      navigationItem.leftBarButtonItem = exportBarButtonItem()
+      showExportFinishedAlertView(exportFilePath)
     } else {
-      self.navigationItem.leftBarButtonItem = self.exportBarButtonItem()
+      navigationItem.leftBarButtonItem = exportBarButtonItem()
     }
   }
 
@@ -164,6 +171,7 @@ private extension JournalListViewController {
 }
 
 // MARK: NSFetchedResultsController
+
 private extension JournalListViewController {
   func journalListFetchedResultsController() -> NSFetchedResultsController<JournalEntry> {
     let fetchedResultController = NSFetchedResultsController(
@@ -195,6 +203,7 @@ private extension JournalListViewController {
 }
 
 // MARK: NSFetchedResultsControllerDelegate
+
 extension JournalListViewController: NSFetchedResultsControllerDelegate {
   func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
     tableView.reloadData()
@@ -202,6 +211,7 @@ extension JournalListViewController: NSFetchedResultsControllerDelegate {
 }
 
 // MARK: UITableViewDataSource
+
 extension JournalListViewController {
   override func numberOfSections(in tableView: UITableView) -> Int {
     return fetchedResultsController.sections?.count ?? 0
@@ -212,7 +222,6 @@ extension JournalListViewController {
   }
 
   override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-    //swiftlint:disable:next force_cast
     let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! SurfEntryTableViewCell
     configureCell(cell, indexPath: indexPath)
     return cell
@@ -265,7 +274,7 @@ extension JournalListViewController {
   }
 
   override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-    guard case(.delete) = editingStyle else { return }
+    guard case .delete = editingStyle else { return }
 
     let surfJournalEntry = fetchedResultsController.object(at: indexPath)
     coreDataStack.mainContext.delete(surfJournalEntry)
@@ -274,14 +283,16 @@ extension JournalListViewController {
 }
 
 // MARK: JournalEntryDelegate
+
 extension JournalListViewController: JournalEntryDelegate {
   func didFinish(viewController: JournalEntryViewController, didSave: Bool) {
     // 1
     guard didSave,
-      let context = viewController.context,
-      context.hasChanges else {
-        dismiss(animated: true)
-        return
+          let context = viewController.context,
+          context.hasChanges
+    else {
+      dismiss(animated: true)
+      return
     }
     // 2
     context.perform {
